@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget Management | Fintecher Finance</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/darkmode.css">
+  <style>
+    /* General Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 15px 20px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .navbar a {
+      background-color: #6a11cb;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background 0.3s ease;
+      font-weight: 500;
+    }
+
+    .navbar a:hover {
+      background-color: #5a0ac5;
+    }
+
+    /* Home Container */
+    .home-container {
+      padding-top: 100px; /* To make space for navbar */
+      text-align: center;
+    }
+
+    .home-container h2 {
+      font-size: 36px;
+      color: #6a11cb;
+      margin-bottom: 20px;
+    }
+
+    .home-container p {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    /* Budget List */
+    .budget-list {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .budget-item {
+      display: flex;
+      justify-content: space-between;
+      width: 80%;
+      background: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .budget-item.income {
+      background-color: #d4edda;
+    }
+
+    .budget-item.expense {
+      background-color: #f8d7da;
+    }
+
+    .budget-item .amount {
+      font-weight: bold;
+    }
+
+    /* Add New Budget Entry Form */
+    .add-budget-form {
+      margin-top: 40px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .add-budget-form input,
+    .add-budget-form select,
+    .add-budget-form button {
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    /* Summary Stats */
+    .summary-stats {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+
+    .summary-card {
+      background: #fff;
+      padding: 20px;
+      width: 250px;
+      text-align: center;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      margin: 10px;
+    }
+
+    .summary-card h3 {
+      margin-bottom: 10px;
+    }
+
+    .summary-card .total {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* Footer */
+    footer {
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 100px auto 0;
+      padding: 20px;
+    }
+
+    .budget-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .budget-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .budget-form {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background: #6a11cb;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #5a0ac5;
+    }
+
+    .budget-list {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .budget-item {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .budget-item:last-child {
+      border-bottom: none;
+    }
+
+    .amount {
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .income {
+      color: #4CAF50;
+    }
+
+    .expense {
+      color: #f44336;
+    }
+
+    .budget-item button {
+      padding: 5px 10px;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress {
+      height: 100%;
+      background: #6a11cb;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .chart-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-top: 30px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- New Navbar -->
+  <nav class="navbar">
+    <a href="index.html">Home</a>
+    <a href="budget.html">Budget</a>
+    <a href="transactions.html">Transactions</a>
+    <a href="reports.html">Reports</a>
+    <a href="settings.html">Settings</a>
+  </nav>
+  
+
+  <!-- Page Content -->
+  <div class="container">
+    <h1>Budget Management</h1>
+    
+    <div class="budget-grid">
+      <div class="budget-card">
+        <h3>Monthly Income</h3>
+        <p class="amount income" id="totalIncome">$0.00</p>
+        <div class="progress-bar">
+          <div class="progress" id="incomeProgress"></div>
+        </div>
+      </div>
+      <div class="budget-card">
+        <h3>Monthly Expenses</h3>
+        <p class="amount expense" id="totalExpenses">$0.00</p>
+        <div class="progress-bar">
+          <div class="progress" id="expenseProgress"></div>
+        </div>
+      </div>
+      <div class="budget-card">
+        <h3>Remaining Budget</h3>
+        <p class="amount" id="remainingBudget">$0.00</p>
+        <div class="progress-bar">
+          <div class="progress" id="savingsProgress"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="budget-form">
+      <h2>Set Budget</h2>
+      <form id="budgetForm">
+        <div class="form-group">
+          <label for="category">Category</label>
+          <select id="category" required>
+            <option value="">Select Category</option>
+            <option value="salary">Salary</option>
+            <option value="spouse_income">Spouse Income</option>
+            <option value="rent">Rent/Mortgage</option>
+            <option value="utilities">Utilities</option>
+            <option value="groceries">Groceries</option>
+            <option value="transportation">Transportation</option>
+            <option value="healthcare">Healthcare</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="savings">Savings</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="amount">Amount</label>
+          <input type="number" id="amount" required min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label for="type">Type</label>
+          <select id="type" required>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
+        <button type="submit">Add Budget Item</button>
+      </form>
+    </div>
+
+    <div class="budget-list">
+      <h2>Budget Items</h2>
+      <div class="budget-item header">
+        <div>Category</div>
+        <div>Amount</div>
+        <div>Type</div>
+        <div></div>
+      </div>
+      <div id="budgetItems"></div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="budgetChart"></canvas>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Fintecher Finance. All rights reserved.</p>
+  </footer>
+  
+  <script>
+    // Make functions available globally
+    window.budgetData = [];
+    
+    window.updateBudgetDisplay = async function(items) {
+      if (!items) {
+        await loadBudgetItems();
+        return;
+      }
+      
+      console.log('Updating display with data:', items);
+      window.budgetData = items;  // Store data globally
+      
+      const totalIncome = items.filter(item => item.type === 'income').reduce((sum, item) => sum + item.amount, 0);
+      const totalExpenses = items.filter(item => item.type === 'expense').reduce((sum, item) => sum + item.amount, 0);
+      const remaining = totalIncome - totalExpenses;
+
+      // Update summary cards
+      document.getElementById('totalIncome').textContent = `$${totalIncome.toFixed(2)}`;
+      document.getElementById('totalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
+      document.getElementById('remainingBudget').textContent = `$${remaining.toFixed(2)}`;
+
+      // Update progress bars
+      const maxAmount = Math.max(totalIncome, totalExpenses) || 1;
+      document.getElementById('incomeProgress').style.width = `${(totalIncome / maxAmount) * 100}%`;
+      document.getElementById('expenseProgress').style.width = `${(totalExpenses / maxAmount) * 100}%`;
+      document.getElementById('savingsProgress').style.width = `${((remaining / totalIncome) || 0) * 100}%`;
+
+      // Update budget items list
+      const budgetItems = document.getElementById('budgetItems');
+      budgetItems.innerHTML = '';
+
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'budget-item';
+        div.innerHTML = `
+          <div>${item.category || item.description}</div>
+          <div class="amount ${item.type === 'income' ? 'income' : 'expense'}">
+            ${item.type === 'income' ? '+' : '-'}$${Math.abs(item.amount).toFixed(2)}
+          </div>
+          <div style="text-transform: capitalize;">${item.type}</div>
+          <button onclick="deleteBudgetItem('${item._id}')">Delete</button>
+        `;
+        budgetItems.appendChild(div);
+      });
+
+      // Update chart
+      updateChart(items);
+    };
+
+    document.getElementById('budgetForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const category = document.getElementById('category').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      const type = document.getElementById('type').value;
+
+      try {
+        const response = await fetch('http://localhost:3000/budget', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            description: `Budget: ${category}`,
+            amount: amount,
+            type: type,
+            category: category,
+            date: new Date().toISOString()
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Budget item added:', result);
+          loadBudgetItems();  // Refresh all pages
+          document.getElementById('budgetForm').reset();
+        } else {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to add budget item');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error adding budget item. Please check your connection and try again.');
+      }
+    });
+
+    async function loadBudgetItems() {
+      try {
+        const response = await fetch('http://localhost:3000/budget');
+        if (response.ok) {
+          const items = await response.json();
+          window.updateBudgetDisplay(items);
+          
+          // Update other pages if they're open
+          if (window.updateTransactions) {
+            window.updateTransactions();
+          }
+          if (window.updateReports) {
+            window.updateReports();
+          }
+        } else {
+          throw new Error('Failed to fetch budget items');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error loading budget items. Please check your connection and try again.');
+      }
+    }
+
+    async function deleteBudgetItem(id) {
+      try {
+        const response = await fetch(`http://localhost:3000/budget/${id}`, {
+          method: 'DELETE'
+        });
+        
+        if (response.ok) {
+          loadBudgetItems();  // Refresh the list
+        } else {
+          throw new Error('Failed to delete budget item');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error deleting budget item. Please try again.');
+      }
+    }
+
+    function updateChart(items) {
+      const ctx = document.getElementById('budgetChart').getContext('2d');
+      
+      // Get all unique categories
+      const categories = [...new Set(items.map(item => item.category))];
+      
+      // Calculate totals for each category
+      const incomeData = categories.map(category => 
+        items
+          .filter(item => item.category === category && item.type === 'income')
+          .reduce((sum, item) => sum + item.amount, 0)
+      );
+      
+      const expenseData = categories.map(category => 
+        items
+          .filter(item => item.category === category && item.type === 'expense')
+          .reduce((sum, item) => sum + item.amount, 0)
+      );
+
+      if (window.budgetChart) {
+        window.budgetChart.destroy();
+      }
+
+      window.budgetChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: categories,
+          datasets: [
+            {
+              label: 'Income',
+              data: incomeData,
+              backgroundColor: '#4CAF50',
+              borderColor: '#388E3C',
+              borderWidth: 1
+            },
+            {
+              label: 'Expenses',
+              data: expenseData,
+              backgroundColor: '#f44336',
+              borderColor: '#d32f2f',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: value => '$' + value.toLocaleString()
+              }
+            }
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: 'Income vs Expenses by Category'
+            }
+          }
+        }
+      });
+    }
+
+    // Load initial data when page loads
+    loadBudgetItems();
+  </script>
+  <script src="scripts/theme.js"></script>
+</body>
+</html>

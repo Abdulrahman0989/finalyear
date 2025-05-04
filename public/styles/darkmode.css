@@ -1,0 +1,58 @@
+/* Dark mode styles */
+body.dark {
+  background: #121212 !important;
+  color: #f0f0f0 !important;
+}
+
+body.dark .navbar {
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+
+body.dark section,
+body.dark .feature-card,
+body.dark .card,
+body.dark .chart-container,
+body.dark .transaction-list,
+body.dark .summary-card {
+  background: #1e1e1e !important;
+  color: #f0f0f0 !important;
+}
+
+body.dark input,
+body.dark select,
+body.dark textarea {
+  background: #2d2d2d !important;
+  color: #f0f0f0 !important;
+  border-color: #404040 !important;
+}
+
+body.dark table th {
+  background: #2d2d2d !important;
+  color: #f0f0f0 !important;
+}
+
+body.dark table td {
+  border-color: #404040 !important;
+}
+
+body.dark .hero {
+  background: linear-gradient(to right, #4a0c8c, #1a4fb3) !important;
+}
+
+/* Preserve text colors for specific elements */
+body.dark h2,
+body.dark h3 {
+  color: #8a2be2 !important;
+}
+
+/* Dark mode transitions */
+body,
+section,
+input,
+select,
+textarea,
+.card,
+.feature-card,
+.chart-container {
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+} 

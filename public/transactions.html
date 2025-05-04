@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transactions | Fintecher Finance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* General Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 15px 20px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .navbar a {
+      background-color: #6a11cb;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background 0.3s ease;
+      font-weight: 500;
+    }
+
+    .navbar a:hover {
+      background-color: #5a0ac5;
+    }
+
+    .container {
+      margin-top: 120px;
+      padding: 20px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #6a11cb;
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #6a11cb;
+      color: white;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #5a0ac5;
+    }
+
+    .transaction-list {
+      background: #fff;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+
+    footer {
+      margin-top: 50px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="index.html">Home</a>
+    <a href="budget.html">Budget</a>
+    <a href="transactions.html">Transactions</a>
+    <a href="reports.html">Reports</a>
+    <a href="settings.html">Settings</a>
+  </nav>
+
+  <div class="container">
+    <h2>Transactions</h2>
+
+    <form id="transaction-form">
+      <input type="text" id="description" placeholder="Description" required>
+      <input type="number" id="amount" placeholder="Amount" required>
+      <input type="date" id="date" required>
+      
+      <select id="type" required>
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+      
+      <select id="category" required>
+        <option value="">Select Category</option>
+        <option value="salary">Salary</option>
+        <option value="spouse_income">Spouse Income</option>
+        <option value="grocery">Grocery</option>
+        <option value="clothing">Clothing</option>
+        <option value="tuition">Tuition</option>
+        <option value="mortgage">Mortgage</option>
+        <option value="rent">Rent</option>
+        <option value="utilities">Utilities</option>
+        <option value="entertainment">Entertainment</option>
+        <option value="other">Other</option>
+      </select>
+
+      <select id="currency">
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="GBP">GBP</option>
+        <option value="JPY">JPY</option>
+      </select>
+
+      <button type="submit">Add Transaction</button>
+    </form>
+
+    <div class="transaction-list" id="transaction-list">
+      <!-- Transactions will appear here -->
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 Fintecher Finance. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Base URL for the backend API
+    const BASE_URL = 'http://localhost:3000';
+
+    // Fetch and display transactions
+    async function loadTransactions() {
+      try {
+        const response = await fetch(`${BASE_URL}/transactions`);
+        if (!response.ok) {
+          throw new Error('Failed to load transactions');
+        }
+        const data = await response.json();
+        const transactionList = document.getElementById('transaction-list');
+        transactionList.innerHTML = '';
+
+        data.forEach(tx => {
+          const item = document.createElement('div');
+          item.className = 'transaction-item';
+          const date = new Date(tx.date).toLocaleDateString();
+          item.innerHTML = `
+            <span>${date} - ${tx.description} (${tx.category})</span>
+            <span class="${tx.type}">${tx.type === 'income' ? '+' : '-'}$${Math.abs(tx.amount).toFixed(2)}</span>
+          `;
+          transactionList.appendChild(item);
+        });
+      } catch (error) {
+        console.error('Error loading transactions:', error);
+        alert('Error loading transactions. Please try again.');
+      }
+    }
+
+    // Handle form submission
+    document.getElementById('transaction-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = {
+        description: document.getElementById('description').value,
+        amount: parseFloat(document.getElementById('amount').value),
+        date: document.getElementById('date').value,
+        type: document.getElementById('type').value,
+        category: document.getElementById('category').value
+      };
+
+      // Validate form data
+      if (!formData.description || !formData.amount || !formData.date || !formData.type || !formData.category) {
+        alert('Please fill in all required fields');
+        return;
+      }
+
+      if (isNaN(formData.amount)) {
+        alert('Please enter a valid amount');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BASE_URL}/transactions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to add transaction');
+        }
+
+        // Reset form and reload transactions
+        e.target.reset();
+        loadTransactions();
+        
+        // Also update budget page if it's open
+        if (window.updateBudgetDisplay) {
+          window.updateBudgetDisplay();
+        }
+      } catch (error) {
+        console.error('Error adding transaction:', error);
+        alert(error.message || 'Error adding transaction. Please try again.');
+      }
+    });
+
+    // Load transactions when page loads
+    loadTransactions();
+  </script>
+
+  <script src="scripts/theme.js"></script>
+
+</body>
+</html>

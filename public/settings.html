@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings | Fintecher Finance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/settings.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      background: #121212;
+      color: #f0f0f0;
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 15px 20px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .navbar a {
+      background-color: #6a11cb;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background 0.3s ease;
+      font-weight: 500;
+    }
+
+    .navbar a:hover {
+      background-color: #5a0ac5;
+    }
+
+    .home-container {
+      padding: 120px 20px 50px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      font-size: 36px;
+      color: #6a11cb;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    p {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    section {
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+      transition: background 0.3s;
+    }
+
+    body.dark section {
+      background: #1e1e1e;
+    }
+
+    section h3 {
+      color: #6a11cb;
+      margin-bottom: 15px;
+      font-size: 22px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 15px;
+      font-weight: 500;
+    }
+
+    input,
+    select {
+      width: 100%;
+      max-width: 500px;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    button {
+      margin-top: 20px;
+      background-color: #6a11cb;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #5a0ac5;
+    }
+
+    footer {
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+      }
+    }
+
+    /* Add new styles for logout section */
+    .logout-section {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+
+    .logout-button {
+      background-color: #dc3545 !important;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .logout-button:hover {
+      background-color: #c82333 !important;
+    }
+
+    .confirmation-dialog {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+
+    .confirmation-dialog button {
+      margin: 10px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .confirm-button {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .cancel-button {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html">Home</a>
+    <a href="budget.html">Budget</a>
+    <a href="transactions.html">Transactions</a>
+    <a href="reports.html">Reports</a>
+    <a href="settings.html">Settings</a>
+  </nav>
+
+  <div class="home-container">
+    <h2>Settings</h2>
+    <p>Adjust your preferences and account settings below.</p>
+
+    <!-- Account Settings -->
+    <section>
+      <h3>Account</h3>
+      <label>Email
+        <input type="email" id="userEmail" placeholder="you@example.com" />
+      </label>
+      <label>New Password
+        <input type="password" id="newPassword" placeholder="••••••••" />
+      </label>
+      <button id="saveAccountBtn" class="btn-primary">Save Changes</button>
+    </section>
+
+    <!-- Notification Settings -->
+    <section>
+      <h3>Notifications</h3>
+      <label>
+        <input type="checkbox" id="emailAlerts" checked /> Email Alerts
+      </label>
+      <label>
+        <input type="checkbox" id="pushNotifications" /> Push Notifications
+      </label>
+    </section>
+
+    <!-- Appearance Settings -->
+    <section>
+      <h3>Appearance</h3>
+      <div class="theme-settings">
+        <label for="themeToggle" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+          <span>Dark Mode</span>
+          <div class="toggle-switch">
+            <input type="checkbox" id="themeToggle">
+            <span class="toggle-slider"></span>
+          </div>
+        </label>
+      </div>
+    </section>
+
+    <!-- Account Management -->
+    <section>
+      <h3>Account Management</h3>
+      <button id="deleteAccountBtn" class="btn-danger">Delete Account</button>
+    </section>
+
+    <!-- New logout section -->
+    <div class="logout-section">
+      <h3>Account</h3>
+      <p>You are logged in as: <span id="userEmail"></span></p>
+      <button class="logout-button" onclick="showLogoutConfirmation()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Logout confirmation dialog -->
+  <div class="overlay" id="overlay"></div>
+  <div class="confirmation-dialog" id="confirmationDialog">
+    <h3>Confirm Logout</h3>
+    <p>Are you sure you want to logout?</p>
+    <button class="confirm-button" onclick="logout()">Yes, Logout</button>
+    <button class="cancel-button" onclick="hideLogoutConfirmation()">Cancel</button>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 Fintecher Finance. All rights reserved.</p>
+  </footer>
+
+  <script src="scripts/settings.js"></script>
+  <script src="scripts/theme.js"></script>
+  <script>
+    // Show current user's email
+    document.getElementById('userEmail').textContent = localStorage.getItem('userEmail') || 'User';
+
+    function showLogoutConfirmation() {
+      document.getElementById('overlay').style.display = 'block';
+      document.getElementById('confirmationDialog').style.display = 'block';
+    }
+
+    function hideLogoutConfirmation() {
+      document.getElementById('overlay').style.display = 'none';
+      document.getElementById('confirmationDialog').style.display = 'none';
+    }
+
+    function logout() {
+      // Clear user data from localStorage
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('userEmail');
+      
+      // Redirect to login page
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

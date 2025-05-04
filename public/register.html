@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Fintecher Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/darkmode.css">
+    <style>
+        .register-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #6a11cb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5a0ac5;
+        }
+
+        .error {
+            color: #ff4444;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .success {
+            color: #4CAF50;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .verification-section {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2>Create Account</h2>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required 
+                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                       title="Please enter a valid email address">
+                <div id="emailError" class="error"></div>
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required 
+                       minlength="3" maxlength="20"
+                       pattern="[a-zA-Z0-9_]+"
+                       title="Username can only contain letters, numbers, and underscores">
+                <div id="usernameError" class="error"></div>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required 
+                       minlength="6"
+                       pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
+                       title="Password must be at least 6 characters long and contain at least one letter and one number">
+                <div id="passwordError" class="error"></div>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" required>
+                <div id="confirmPasswordError" class="error"></div>
+            </div>
+            <button type="submit" id="registerButton">Register</button>
+        </form>
+
+        <div id="verificationSection" class="verification-section">
+            <h3>Verify Your Email</h3>
+            <p>We've sent a verification code to your email address. Please enter it below:</p>
+            <div class="form-group">
+                <input type="text" id="verificationCode" placeholder="Enter 6-digit code" 
+                       pattern="[0-9]{6}" maxlength="6"
+                       title="Please enter the 6-digit verification code">
+                <div id="verificationError" class="error"></div>
+            </div>
+            <button onclick="verifyCode()" id="verifyButton">Verify</button>
+            <p class="resend-text">Didn't receive the code? <a href="#" onclick="resendCode()">Resend</a></p>
+        </div>
+    </div>
+
+    <script src="scripts/darkmode.js"></script>
+    <script>
+        let verificationEmail = '';
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Clear previous errors
+            document.querySelectorAll('.error').forEach(el => el.textContent = '');
+
+            // Validate password match
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match!';
+                return;
+            }
+
+            // Disable register button and show loading state
+            const registerButton = document.getElementById('registerButton');
+            registerButton.disabled = true;
+            registerButton.textContent = 'Registering...';
+
+            try {
+                const response = await fetch('http://localhost:3000/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    verificationEmail = email;
+                    document.getElementById('verificationSection').style.display = 'block';
+                    document.getElementById('registerForm').style.display = 'none';
+                    showSuccess('Please check your email for the verification code');
+                } else {
+                    // Show error message in the appropriate field
+                    if (data.field) {
+                        document.getElementById(`${data.field}Error`).textContent = data.error;
+                    } else {
+                        showError(data.error || 'Registration failed');
+                    }
+                }
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                registerButton.disabled = false;
+                registerButton.textContent = 'Register';
+            }
+        });
+
+        async function verifyCode() {
+            const code = document.getElementById('verificationCode').value;
+            const verifyButton = document.getElementById('verifyButton');
+            
+            if (!code || code.length !== 6) {
+                document.getElementById('verificationError').textContent = 'Please enter a valid 6-digit code';
+                return;
+            }
+
+            verifyButton.disabled = true;
+            verifyButton.textContent = 'Verifying...';
+
+            try {
+                const response = await fetch('http://localhost:3000/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: verificationEmail, code })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess('Email verified successfully! Please login.');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    throw new Error(data.error || 'Verification failed');
+                }
+            } catch (error) {
+                document.getElementById('verificationError').textContent = error.message;
+            } finally {
+                verifyButton.disabled = false;
+                verifyButton.textContent = 'Verify';
+            }
+        }
+
+        async function resendCode() {
+            const resendLink = document.querySelector('.resend-text a');
+            resendLink.style.pointerEvents = 'none';
+            resendLink.textContent = 'Sending...';
+
+            try {
+                const response = await fetch('http://localhost:3000/resend-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: verificationEmail })
+                });
+
+                if (response.ok) {
+                    showSuccess('New verification code sent!');
+                } else {
+                    throw new Error('Failed to resend code');
+                }
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                setTimeout(() => {
+                    resendLink.style.pointerEvents = 'auto';
+                    resendLink.textContent = 'Resend';
+                }, 30000); // Prevent resending for 30 seconds
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            document.querySelector('.register-container').insertBefore(errorDiv, document.querySelector('form'));
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            document.querySelector('.register-container').insertBefore(successDiv, document.querySelector('form'));
+            setTimeout(() => successDiv.remove(), 5000);
+        }
+    </script>
+    <script src="scripts/theme.js"></script>
+</body>
+</html> 

@@ -1,0 +1,123 @@
+:root {
+    --primary-color: #6f42c1;
+    --secondary-color: #563d7c;
+    --accent-color: #8a5fff;
+    --text-color: #2c3e50;
+    --background-color: #f8f9fa;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background: var(--primary-color);
+    color: #fff;
+    transition: all 0.3s;
+}
+
+#sidebar.active {
+    margin-left: -250px;
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: var(--secondary-color);
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+}
+
+#sidebar ul li a {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    display: block;
+    color: #fff;
+    text-decoration: none;
+}
+
+#sidebar ul li a:hover {
+    background: var(--accent-color);
+}
+
+#content {
+    width: 100%;
+    padding: 20px;
+    min-height: 100vh;
+    transition: all 0.3s;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.dashboard-content {
+    padding: 20px;
+}
+
+.navbar {
+    padding: 15px 10px;
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 40px;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+.btn-info {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+}
+
+.card.text-white.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+/* Dark mode styles */
+[data-theme="dark"] {
+    --primary-color: #563d7c;
+    --secondary-color: #6f42c1;
+    --accent-color: #8a5fff;
+    --text-color: #ffffff;
+    --background-color: #121212;
+}
+
+/* Additional purple accents */
+.nav-link.active {
+    background-color: var(--accent-color) !important;
+    color: white !important;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+/* Chart customization */
+canvas {
+    max-height: 300px;
+}
